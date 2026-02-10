@@ -43,6 +43,13 @@ def extract_text_from_pdf(pdf_path: Path) -> str:
     print(f"   Total characters extracted: {len(combined_text):,}")
     return combined_text
 
+def extract_text_from_txt(txt_path: Path) -> str:
+    print(f"\nReading text from: {txt_path.name}")
+    with open(txt_path, "r", encoding="utf-8") as f:
+        text = f.read()
+    print(f" Total characters read: {len(text):,}")
+    return text
+
 
 # =============================================================================
 # Text Chunking

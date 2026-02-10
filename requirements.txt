@@ -1,4 +1,6 @@
-google-generativeai
+transformers
+torch
+sentencepiece
 pdfplumber
 python-dotenv
 pyinstaller

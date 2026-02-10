@@ -1,18 +1,48 @@
-import os
 from pathlib import Path
 import sys
-from dotenv import load_dotenv, set_key
-from tkinter import Tk
-from tkinter import simpledialog, messagebox
 
 
 # =============================================================================
 # Configuration & Constants
 # =============================================================================
-CHUNK_SIZE = 2500  # Characters per chunk (2000-3000 range)
-MODEL_NAME = "gemini-2.0-flash"
-MAX_RETRIES = 5
-INITIAL_BACKOFF = 20  # seconds
+CHUNK_SIZE = 2000  # Characters per chunk (reduced for NLLB model)
+MODEL_NAME = "facebook/nllb-200-distilled-600M"
+LOCAL_MODEL_PATH = None  # Set to local path if model is downloaded elsewhere
+
+# =============================================================================
+# NLLB-200 Supported Languages
+# Full list: https://github.com/facebookresearch/flores/blob/main/flores200/README.md
+# =============================================================================
+SUPPORTED_LANGUAGES = {
+    "en": ("eng_Latn", "English"),
+    "ko": ("kor_Hang", "Korean / 한국어"),
+    "ja": ("jpn_Jpan", "Japanese / 日本語"),
+    "zh": ("zho_Hans", "Chinese (Simplified) / 简体中文"),
+    "zh-tw": ("zho_Hant", "Chinese (Traditional) / 繁體中文"),
+    "es": ("spa_Latn", "Spanish / Español"),
+    "fr": ("fra_Latn", "French / Français"),
+    "de": ("deu_Latn", "German / Deutsch"),
+    "it": ("ita_Latn", "Italian / Italiano"),
+    "pt": ("por_Latn", "Portuguese / Português"),
+    "ru": ("rus_Cyrl", "Russian / Русский"),
+    "ar": ("arb_Arab", "Arabic / العربية"),
+    "hi": ("hin_Deva", "Hindi / हिन्दी"),
+    "th": ("tha_Thai", "Thai / ไทย"),
+    "vi": ("vie_Latn", "Vietnamese / Tiếng Việt"),
+    "id": ("ind_Latn", "Indonesian / Bahasa Indonesia"),
+    "nl": ("nld_Latn", "Dutch / Nederlands"),
+    "pl": ("pol_Latn", "Polish / Polski"),
+    "tr": ("tur_Latn", "Turkish / Türkçe"),
+    "uk": ("ukr_Cyrl", "Ukrainian / Українська"),
+}
+
+# Default language settings
+DEFAULT_SOURCE_LANG = "en"
+DEFAULT_TARGET_LANG = "ko"
+
+# Current language settings (can be changed at runtime)
+SOURCE_LANG = SUPPORTED_LANGUAGES[DEFAULT_SOURCE_LANG][0]
+TARGET_LANG = SUPPORTED_LANGUAGES[DEFAULT_TARGET_LANG][0]
 
 
 def get_base_path() -> Path:
@@ -22,10 +52,8 @@ def get_base_path() -> Path:
     When running as a script, this is the script's directory.
     """
     if getattr(sys, 'frozen', False):
-        # Running as compiled executable
         return Path(sys.executable).parent
     else:
-        # Running as script
         return Path(__file__).parent
 
 
@@ -33,8 +61,8 @@ BASE_PATH = get_base_path()
 INPUT_DIR = BASE_PATH / "input"
 OUTPUT_DIR = BASE_PATH / "output"
 PROCESSED_DIR = BASE_PATH / "processed"
-ENV_FILE = BASE_PATH / ".env"
 SHOW_USAGE_STATS = True
+
 
 # =============================================================================
 # Directory Setup
@@ -47,43 +75,34 @@ def ensure_directories():
 
 
 # =============================================================================
-# API Key Management
+# Language Selection
 # =============================================================================
-def get_api_key() -> str:
-    """
-    Load API key from .env file.
-    If not found, prompt user via tkinter dialog and save it.
-    """
-    load_dotenv(ENV_FILE)
-    api_key = os.getenv("GOOGLE_API_KEY")
-
-    if not api_key:
-        print("⚠ API Key not found. Launching configuration window...")
-        api_key = prompt_for_api_key()
-
-        if api_key:
-            # Create .env file if it doesn't exist
-            ENV_FILE.touch(exist_ok=True)
-            set_key(str(ENV_FILE), "GOOGLE_API_KEY", api_key)
-            print("✓ API Key saved to .env file.")
-        else:
-            messagebox.showerror("Error", "API Key is required to run the application.")
-            sys.exit(1)
-
-    return api_key
+def get_nllb_code(lang_key: str) -> str:
+    """Get NLLB language code from short key."""
+    if lang_key in SUPPORTED_LANGUAGES:
+        return SUPPORTED_LANGUAGES[lang_key][0]
+    raise ValueError(f"Unsupported language: {lang_key}")
 
 
-def prompt_for_api_key() -> str:
-    """Display a tkinter dialog to get API key from user."""
-    root = Tk()
-    root.withdraw()  # Hide main window
+def get_language_name(lang_key: str) -> str:
+    """Get human-readable language name from short key."""
+    if lang_key in SUPPORTED_LANGUAGES:
+        return SUPPORTED_LANGUAGES[lang_key][1]
+    return lang_key
 
-    api_key = simpledialog.askstring(
-        "Google Gemini API Key Required",
-        "Please paste your Google Gemini API Key:\n\n"
-        "(Get one free at: https://aistudio.google.com/app/apikey)",
-        show='*'  # Mask input like a password
-    )
 
-    root.destroy()
-    return api_key.strip() if api_key else None
+def set_languages(source: str, target: str):
+    """Set source and target languages for translation."""
+    global SOURCE_LANG, TARGET_LANG
+    SOURCE_LANG = get_nllb_code(source)
+    TARGET_LANG = get_nllb_code(target)
+    print(f"✓ Languages set: {get_language_name(source)} → {get_language_name(target)}")
+
+
+def print_supported_languages():
+    """Print all supported languages."""
+    print("\n📋 Supported Languages:")
+    print("-" * 40)
+    for key, (code, name) in SUPPORTED_LANGUAGES.items():
+        print(f"   {key:6} : {name}")
+    print("-" * 40)
