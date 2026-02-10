@@ -3,3 +3,7 @@ rules.md
 venv
 .venv
 __pycache__
+input/
+output/
+processed/
+pdf_translator.drawio.png.Identifier
