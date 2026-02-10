@@ -33,4 +33,5 @@ python -m venv venv
 
 ## Future Architecture (This can be changed)
 
-![pdf_translator.drawio.png](pdf_translator.drawio.png)
+![pdf_translator.drawio.png(v1)](pdf_translator.drawio.png)
+![pdf_translator_arch.png(v2)](pdf_translator_arch.png)
