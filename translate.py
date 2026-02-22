@@ -3,7 +3,6 @@ Translation module — Groq API
 Full implementation in Milestone 2.
 """
 
-from parse import split_into_chunks
 import config
 
 
@@ -42,15 +41,14 @@ def translate_chunk(chunk: str, chunk_num: int, total_chunks: int) -> str:
     return chunk
 
 
-def translate_text(text: str) -> str:
-    """Translate full text by processing in chunks."""
-    chunks = split_into_chunks(text)
+def translate_text(chunks: list[dict]) -> str:
+    """Translate metadata-enriched chunks and return combined translated text."""
     if not chunks:
         return ""
 
     translated_chunks = []
     for i, chunk in enumerate(chunks, 1):
-        translated = translate_chunk(chunk, i, len(chunks))
+        translated = translate_chunk(chunk["original_text"], i, len(chunks))
         translated_chunks.append(translated)
 
     usage_tracker.print_summary()
