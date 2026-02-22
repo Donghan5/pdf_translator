@@ -1,14 +1,15 @@
 """
-Easy PDF Translator - Local Model Version
-Translates PDFs using NLLB-200 model (Offline, Multilingual)
+Easy PDF Translator v2.0
+Translates PDFs using Groq API + C++ VectorDB
 """
 
 from config import (
-    ensure_directories, INPUT_DIR, OUTPUT_DIR, MODEL_NAME,
-    SUPPORTED_LANGUAGES, set_languages, print_supported_languages,
+    ensure_directories, INPUT_DIR, OUTPUT_DIR,
+    GROQ_MODEL_TRANSLATE, SUPPORTED_LANGUAGES,
+    set_languages, print_supported_languages,
     DEFAULT_SOURCE_LANG, DEFAULT_TARGET_LANG
 )
-from process import process_pdf
+from process import process_pdf, process_txt
 
 # =============================================================================
 # Language Selection
@@ -53,9 +54,8 @@ def configure_languages():
 # =============================================================================
 def main():
     print("=" * 60)
-    print("   Easy PDF + TXT Translator - Local Model Version")
-    print(f"   Model: {MODEL_NAME}")
-    print("   Multilingual Support Enabled")
+    print("   Easy PDF Translator v2.0")
+    print(f"   Model: Groq API ({GROQ_MODEL_TRANSLATE})")
     print("=" * 60)
 
     # Setup directories

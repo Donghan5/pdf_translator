@@ -1,6 +1,6 @@
 import pdfplumber
 from pathlib import Path
-from config import CHUNK_SIZE
+from config import CHUNK_TOKEN_SIZE
 
 # =============================================================================
 # PDF Text Extraction
@@ -54,7 +54,7 @@ def extract_text_from_txt(txt_path: Path) -> str:
 # =============================================================================
 # Text Chunking
 # =============================================================================
-def split_into_chunks(text: str, chunk_size: int = CHUNK_SIZE) -> list[str]:
+def split_into_chunks(text: str, chunk_size: int = CHUNK_TOKEN_SIZE) -> list[str]:
     """
     Split text into manageable chunks for API calls.
     Tries to split at paragraph boundaries when possible.
