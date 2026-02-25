@@ -58,7 +58,8 @@ std::vector<SearchResult> VectorDB::search(const std::vector<float>& query_embed
         results.push_back({
             scored[i].second->chunk_id,
             scored[i].first,
-            scored[i].second->text
+            scored[i].second->text,
+            scored[i].second->metadata
         });
     }
 

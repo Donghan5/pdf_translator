@@ -18,6 +18,7 @@ struct SearchResult {
     std::string chunk_id;
     float score;
     std::string text;
+    nlohmann::json metadata;
 };
 
 class VectorDB {

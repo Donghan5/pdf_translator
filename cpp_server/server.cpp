@@ -60,7 +60,11 @@ void Server::setup_socket() {
 }
 
 void Server::run() {
-    // Install signal handler
+    // Ignore SIGPIPE so writing to a closed socket returns an error
+    // instead of killing the process.
+    signal(SIGPIPE, SIG_IGN);
+
+    // Install signal handler for graceful shutdown
     struct sigaction sa{};
     sa.sa_handler = signal_handler;
     sigemptyset(&sa.sa_mask);
@@ -233,7 +237,8 @@ nlohmann::json Server::handle_search(const nlohmann::json& request) {
         result_array.push_back({
             {"chunk_id", r.chunk_id},
             {"score", r.score},
-            {"text", r.text}
+            {"text", r.text},
+            {"metadata", r.metadata}
         });
     }
 
