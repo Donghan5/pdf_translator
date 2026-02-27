@@ -1,10 +1,52 @@
 rules.md
+
+# Environment
 .env
-venv
-.venv
-__pycache__
+venv/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Test / coverage
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.tox/
+
+# Distribution / packaging
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Logs
+*.log
+
+# C++ build artifacts
+cpp_server/build/
+*.o
+*.so
+*.a
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+*.Identifier
+
+# App data directories
 input/
 output/
 processed/
-*.Identifier
-cpp_server/build/
